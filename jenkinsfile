@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t mathapp .'
+            }
+        }
+        stage('Push to Registry') {
+            steps {
+                sh 'docker tag mathapp your-registry/mathapp:latest'
+                sh 'docker push your-registry/mathapp:latest'
+            }
+        }
+        stage('Kubernetes Deploy') {
+            steps {
+                sh 'kubectl apply -f deployment.yaml'
+            }
+        }
+    }
+}
